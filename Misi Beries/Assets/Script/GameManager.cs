@@ -1,23 +1,24 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;  // Untuk menggunakan UI Image (progress bar)
+using UnityEngine.UI;  
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;  // Singleton
+    public static GameManager Instance;  
 
     // Skor
-    public int coinCount = 0;  // Jumlah koin yang terkumpul
-    public int berryCount = 0; // Jumlah berry yang terkumpul
+    public int coinCount = 0;  
+    public int berryCount = 0; 
 
     // UI
-    public TextMeshProUGUI scoreText;     // Untuk menampilkan koin
-    public TextMeshProUGUI berryText;     // Untuk menampilkan berry
-    public Image targetCoinImage;         // UI Image untuk progress bar target koin
-    public Image berryProgressImage;      // UI Image untuk progress bar target berry
+    public TextMeshProUGUI scoreText;     
+    public TextMeshProUGUI berryText;     
+    public Image targetCoinImage;         
+    public Image berryProgressImage;      
+    public GameObject panelGameOver; 
 
-    public GameObject panelGoodJob;       // Panel "Good Job"
+    public GameObject panelGoodJob;       
     public bool isGamePaused = false;     // Status pause
 
     // Variabel untuk menentukan target koin dan berry per level
@@ -30,6 +31,8 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            level = PlayerPrefs.GetInt("Level", 1); // Ambil level tersimpan, default 1
+
         }
     }
 
@@ -105,8 +108,44 @@ public class GameManager : MonoBehaviour
 
     // Fungsi untuk melanjutkan ke level berikutnya
     public void NextLevel()
+{
+    Time.timeScale = 1f;
+
+    level++;
+    PlayerPrefs.SetInt("Level", level); // Simpan progress level
+
+    string nextLevel = "level" + level;
+
+    Debug.Log("Loading next level: " + nextLevel);
+
+    if (Application.CanStreamedLevelBeLoaded(nextLevel))
     {
-        Time.timeScale = 1f;  // Mengaktifkan kembali waktu permainan
-        SceneManager.LoadScene("level2");  // Ganti sesuai nama scene
+        SceneManager.LoadScene(nextLevel);
     }
+    else
+    {
+        Debug.Log("Level terakhir tercapai! Kembali ke Main Menu.");
+        PlayerPrefs.SetInt("Level", 1); // Reset progress
+        SceneManager.LoadScene("MainMenu");
+    }
+}
+
+    public void ShowGameOver()
+    {
+        panelGameOver.SetActive(true);
+        PauseGame();
+    }
+
+    public void RestartLevel()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu"); // Ganti dengan nama scene MainMenu milikmu
+    }
+
 }

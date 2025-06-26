@@ -61,8 +61,18 @@ public class Level2Manager : MonoBehaviour
 
     // Fungsi untuk melanjutkan ke level berikutnya
     public void NextLevel()
+{
+    Time.timeScale = 1f;  // Mengaktifkan kembali waktu permainan
+    
+    // Memastikan scene level3 ada di Build Settings dan bisa dimuat
+    if (Application.CanStreamedLevelBeLoaded("level3"))
     {
-        Time.timeScale = 1f;  // Mengaktifkan kembali waktu permainan
-        SceneManager.LoadScene("level3"); // Ganti dengan nama scene level berikutnya (misalnya "Level2")
+        SceneManager.LoadScene("level3"); // Memuat scene level3
     }
+    else
+    {
+        Debug.LogError("Level3 tidak ditemukan! Pastikan level3 ada di Build Settings.");
+    }
+}
+
 }
